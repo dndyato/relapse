@@ -17,6 +17,14 @@ body {
     height: 100vh;
     overflow: hidden;
 }
+
+.header {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 18px;
+    color: #aaa;
+}
+
 .calculator {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -24,14 +32,16 @@ body {
     padding: 20px;
     max-width: 300px;
     margin: auto;
-    margin-top: 50px;
+    margin-top: 20px;
 }
+
 .screen {
     grid-column: span 4;
     text-align: right;
     font-size: 40px;
     padding: 20px;
 }
+
 button {
     font-size: 22px;
     padding: 20px;
@@ -40,6 +50,7 @@ button {
     background: #333;
     color: white;
 }
+
 .orange { background: #ff9500; }
 .gray { background: #a5a5a5; color: black; }
 
@@ -58,6 +69,8 @@ video {
 <body>
 
 {% if not trigger %}
+<div class="header">sorry mga ser - @yatowrlds</div>
+
 <form method="POST">
 <input type="hidden" name="expr" id="expr">
 
@@ -105,10 +118,12 @@ function add(val){
     screen.innerText+=val;
     expr.value = screen.innerText;
 }
+
 function clearAll(){
     screen.innerText="0";
     expr.value="";
 }
+
 function del(){
     screen.innerText = screen.innerText.slice(0,-1) || "0";
     expr.value=screen.innerText;
