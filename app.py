@@ -1,0 +1,138 @@
+from flask import Flask, request, send_file, render_template_string
+
+app = Flask(__name__)
+
+HTML = """
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calculator</title>
+<style>
+body {
+    background: black;
+    color: white;
+    font-family: Arial;
+    margin: 0;
+    height: 100vh;
+    overflow: hidden;
+}
+.calculator {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    padding: 20px;
+    max-width: 300px;
+    margin: auto;
+    margin-top: 50px;
+}
+.screen {
+    grid-column: span 4;
+    text-align: right;
+    font-size: 40px;
+    padding: 20px;
+}
+button {
+    font-size: 22px;
+    padding: 20px;
+    border-radius: 50%;
+    border: none;
+    background: #333;
+    color: white;
+}
+.orange { background: #ff9500; }
+.gray { background: #a5a5a5; color: black; }
+
+video {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 100vw;
+    height: 100vh;
+    object-fit: contain;
+    transform: translate(-50%, -50%);
+    background: black;
+}
+</style>
+</head>
+<body>
+
+{% if not trigger %}
+<form method="POST">
+<input type="hidden" name="expr" id="expr">
+
+<div class="calculator">
+<div class="screen" id="screen">0</div>
+
+<button type="button" class="gray" onclick="clearAll()">C</button>
+<button type="button" class="gray" onclick="del()">DEL</button>
+<button type="button" class="gray" onclick="add('%')">%</button>
+<button type="button" class="orange" onclick="add('/')">÷</button>
+
+<button type="button" onclick="add('7')">7</button>
+<button type="button" onclick="add('8')">8</button>
+<button type="button" onclick="add('9')">9</button>
+<button type="button" class="orange" onclick="add('*')">×</button>
+
+<button type="button" onclick="add('4')">4</button>
+<button type="button" onclick="add('5')">5</button>
+<button type="button" onclick="add('6')">6</button>
+<button type="button" class="orange" onclick="add('-')">−</button>
+
+<button type="button" onclick="add('1')">1</button>
+<button type="button" onclick="add('2')">2</button>
+<button type="button" onclick="add('3')">3</button>
+<button type="button" class="orange" onclick="add('+')">+</button>
+
+<button type="button" onclick="add('0')">0</button>
+<button type="button" onclick="add('.')">.</button>
+<button type="submit" class="orange" style="grid-column: span 2;">=</button>
+</div>
+</form>
+
+{% else %}
+<video autoplay controls>
+    <source src="/video" type="video/mp4">
+</video>
+{% endif %}
+
+<script>
+let screen = document.getElementById("screen");
+let expr = document.getElementById("expr");
+
+function add(val){
+    if(screen.innerText==="0") screen.innerText="";
+    screen.innerText+=val;
+    expr.value = screen.innerText;
+}
+function clearAll(){
+    screen.innerText="0";
+    expr.value="";
+}
+function del(){
+    screen.innerText = screen.innerText.slice(0,-1) || "0";
+    expr.value=screen.innerText;
+}
+</script>
+
+</body>
+</html>
+"""
+
+@app.route("/", methods=["GET", "POST"])
+def home():
+    trigger = False
+    if request.method == "POST":
+        expr = request.form.get("expr")
+        if expr == "1+1":
+            trigger = True
+    return render_template_string(HTML, trigger=trigger)
+
+@app.route("/video")
+def video():
+    return send_file("video.mp4", mimetype="video/mp4")
+
+if __name__ == "__main__":
+    print("\nOpen in browser:")
+    print("http://127.0.0.1:5000\n")
+    app.run(port=5000)
